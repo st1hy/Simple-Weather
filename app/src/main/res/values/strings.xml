@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Simple Weather</string>
     <string name="title_city_detail">City Detail</string>
+    <string name="search_label">Search city</string>
+    <string name="search_hint">Search for current weather in any city</string>
 </resources>
