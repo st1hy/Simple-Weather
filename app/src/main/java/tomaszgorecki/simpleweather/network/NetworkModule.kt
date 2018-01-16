@@ -9,27 +9,25 @@ import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
-@Qualifier
-annotation class Accuweather
+@Qualifier annotation class Accuweather
 
-@Module
-abstract class NetworkModule {
+@Module abstract class NetworkModule {
 
-    @Module
-    companion object {
+    @Module companion object {
         @Singleton
         @Provides
         @Accuweather
         @JvmStatic
         fun provideRetrofit(): Retrofit {
-            return Retrofit.Builder()
-                    .baseUrl("http://dataservice.accuweather.com")
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .addCallAdapterFactory(createWithScheduler(Schedulers.io()))
-                    .build()
+            return Retrofit.Builder().baseUrl("http://dataservice.accuweather.com").addConverterFactory(GsonConverterFactory.create()).addCallAdapterFactory(createWithScheduler(Schedulers.io())).build()
+        }
+
+        @Singleton
+        @Provides
+        @JvmStatic
+        fun accuweatherService(@Accuweather retrofit: Retrofit): AccuweatherService {
+            return retrofit.create(AccuweatherService::class.java)
         }
     }
-
-
 
 }

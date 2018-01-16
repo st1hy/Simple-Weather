@@ -1,13 +1,14 @@
-package tomaszgorecki.simpleweather
+package tomaszgorecki.simpleweather.activities
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import tomaszgorecki.simpleweather.dummy.DummyContent
 import kotlinx.android.synthetic.main.activity_city_detail.*
 import kotlinx.android.synthetic.main.city_detail.view.*
+import tomaszgorecki.simpleweather.R
+import tomaszgorecki.simpleweather.model.DummyContent
 
 /**
  * A fragment representing a single City detail screen.
@@ -27,9 +28,6 @@ class CityDetailFragment : Fragment() {
 
         arguments?.let {
             if (it.containsKey(ARG_ITEM_ID)) {
-                // Load the dummy content specified by the fragment
-                // arguments. In a real-world scenario, use a Loader
-                // to load content from a content provider.
                 mItem = DummyContent.ITEM_MAP[it.getString(ARG_ITEM_ID)]
                 activity?.toolbar_layout?.title = mItem?.content
             }
@@ -49,10 +47,6 @@ class CityDetailFragment : Fragment() {
     }
 
     companion object {
-        /**
-         * The fragment argument representing the item ID that this fragment
-         * represents.
-         */
         const val ARG_ITEM_ID = "item_id"
     }
 }

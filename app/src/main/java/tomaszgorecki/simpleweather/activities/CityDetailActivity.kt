@@ -1,4 +1,4 @@
-package tomaszgorecki.simpleweather
+package tomaszgorecki.simpleweather.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,6 +6,7 @@ import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import kotlinx.android.synthetic.main.activity_city_detail.*
+import tomaszgorecki.simpleweather.R
 
 /**
  * An activity representing a single City detail screen. This

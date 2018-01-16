@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="tomaszgorecki.simpleweather">
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+
     <application
         android:name=".app.WeatherApp"
         android:allowBackup="true"
@@ -11,7 +13,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".CityListActivity"
+            android:name=".activities.CityListActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -21,23 +23,13 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CityDetailActivity"
+            android:name=".activities.CityDetailActivity"
             android:label="@string/title_city_detail"
-            android:parentActivityName=".CityListActivity"
+            android:parentActivityName=".activities.CityListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="tomaszgorecki.simpleweather.CityListActivity" />
-        </activity>
-        <activity android:name=".SearchActivity"
-            android:label="@string/search_label"
-            android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-            <meta-data android:name="android.app.searchable"
-                android:resource="@xml/searchable"/>
-
+                android:value="tomaszgorecki.simpleweather.activities.CityListActivity" />
         </activity>
     </application>
 

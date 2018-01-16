@@ -6,8 +6,6 @@
     android:name="tomaszgorecki.simpleweather.CityListFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
-    tools:context="tomaszgorecki.simpleweather.CityListActivity"
+    tools:context="tomaszgorecki.simpleweather.activities.CityListActivity"
     tools:listitem="@layout/city_list_content" />

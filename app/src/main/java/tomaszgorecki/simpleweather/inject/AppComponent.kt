@@ -11,10 +11,13 @@ import javax.inject.Singleton
 @Component(modules = arrayOf(AppModule::class, NetworkModule::class))
 interface AppComponent {
 
+    fun newActivityComponent(activity: ActivityModule): ActivityComponent
+
     @Component.Builder
     interface Builder {
         @BindsInstance
         fun app(app: WeatherApp): Builder
+
         fun create(): AppComponent
     }
 }

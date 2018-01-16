@@ -5,11 +5,9 @@ import dagger.Binds
 import dagger.Module
 import tomaszgorecki.simpleweather.app.WeatherApp
 
-@Module
-abstract class AppModule {
+@Module abstract class AppModule {
 
     @Binds
     @AppContext
-    @PerApp
-    abstract fun appContext(app: WeatherApp): Context
+    @PerApp abstract fun appContext(app: WeatherApp): Context
 }

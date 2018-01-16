@@ -9,13 +9,7 @@
     android:divider="?android:attr/dividerHorizontal"
     android:orientation="horizontal"
     android:showDividers="middle"
-    tools:context="tomaszgorecki.simpleweather.CityListActivity">
-
-    <!--
-    This layout is a two-pane layout for the Cities
-    master/detail flow.
-    
-    -->
+    tools:context="tomaszgorecki.simpleweather.activities.CityListActivity">
 
     <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -23,10 +17,8 @@
         android:name="tomaszgorecki.simpleweather.CityListFragment"
         android:layout_width="@dimen/item_width"
         android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
-        tools:context="tomaszgorecki.simpleweather.CityListActivity"
+        tools:context="tomaszgorecki.simpleweather.activities.CityListActivity"
         tools:listitem="@layout/city_list_content" />
 
     <FrameLayout
