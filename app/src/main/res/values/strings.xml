@@ -2,5 +2,7 @@
     <string name="app_name">Simple Weather</string>
     <string name="title_city_detail">City Detail</string>
     <string name="search_label">Search city</string>
-    <string name="search_hint">Search for current weather in any city</string>
+    <string name="search_hint">Search city to find current weather</string>
+    <string name="city_name_format">%1$s, %2$s</string>
+    <string name="city_temp_label">Temperature</string>
 </resources>

@@ -34,6 +34,7 @@
         android:id="@+id/floating_search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        style="@style/FloatingSearchView"
         app:floatingSearch_searchBarMarginLeft="8dp"
         app:floatingSearch_searchBarMarginTop="4dp"
         app:floatingSearch_searchBarMarginRight="8dp"

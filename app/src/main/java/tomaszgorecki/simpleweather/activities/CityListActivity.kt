@@ -1,11 +1,16 @@
 package tomaszgorecki.simpleweather.activities
 
 import android.Manifest
+import android.app.Activity
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
+import android.text.InputFilter
+import android.widget.EditText
 import com.arlib.floatingsearchview.FloatingSearchView
 import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
 import com.tbruyelle.rxpermissions2.RxPermissions
+import dagger.Module
+import dagger.Provides
 import io.objectbox.Box
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -15,27 +20,36 @@ import timber.log.Timber
 import tomaszgorecki.simpleweather.R
 import tomaszgorecki.simpleweather.activities.base.BaseActivity
 import tomaszgorecki.simpleweather.inject.ActivityModule
-import tomaszgorecki.simpleweather.network.*
+import tomaszgorecki.simpleweather.inject.CityListActivityComponent
+import tomaszgorecki.simpleweather.inject.PerActivity
+import tomaszgorecki.simpleweather.model.OpenWeatherCity
+import tomaszgorecki.simpleweather.model.OpenWeatherCityEntity
+import tomaszgorecki.simpleweather.model.OpenWeatherCityEntity_
+import tomaszgorecki.simpleweather.model.OpenWeatherFindResult
+import tomaszgorecki.simpleweather.network.OpenWeatherMapService
 import java.util.*
+import java.util.regex.Pattern
 import javax.inject.Inject
 
 class CityListActivity : BaseActivity(), FloatingSearchView.OnSearchListener {
 
-    private var mTwoPane: Boolean = false
     @Inject lateinit var weatherService: OpenWeatherMapService
     @Inject lateinit var rxPermissions: RxPermissions
     @Inject lateinit var cityBox: Box<OpenWeatherCityEntity>
-    var searchingDisposable: Disposable? = null
+
+    private lateinit var component: CityListActivityComponent
+    private var searchingDisposable: Disposable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_city_list)
-        getAppComponent().newActivityComponent(ActivityModule(this)).inject(this)
-        city_detail_container?.let { mTwoPane = true }
+        component = getAppComponent().newActivityComponent(ActivityModule(this))
+        component.inject(this)
         setupRecyclerView(city_list)
         setupFloatingSearchView()
 
-        rxPermissions.request(Manifest.permission.INTERNET).subscribe({ granted -> if (!granted) finish() })
+        rxPermissions.request(Manifest.permission.INTERNET)
+                .subscribe({ if (!it) finish() })
     }
 
     private fun setupFloatingSearchView() {
@@ -53,10 +67,18 @@ class CityListActivity : BaseActivity(), FloatingSearchView.OnSearchListener {
                     }
                 }
             }
-            setCloseSearchOnKeyboardDismiss(true)
             setDismissFocusOnItemSelection(true)
             setOnSearchListener(this@CityListActivity)
+            filterInput()
         }
+    }
+
+    private fun FloatingSearchView.filterInput() {
+        val editText: EditText = findViewById(R.id.search_bar_text)
+        val acceptedChars = Pattern.compile("[ a-zA-Z]")
+        editText.filters = arrayOf(InputFilter { source, _, _, _, _, _ ->
+            source?.filter { acceptedChars.matcher(it.toString()).matches() } ?: ""
+        })
     }
 
     override fun onDestroy() {
@@ -100,9 +122,27 @@ class CityListActivity : BaseActivity(), FloatingSearchView.OnSearchListener {
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
-        val list = cityBox.query().sort({ o1, o2 -> o1.lastUsed.compareTo(o2.lastUsed) })
-                .build().find()
-        recyclerView.adapter = CitiesRecyclerViewAdapter(this, list, mTwoPane)
+        recyclerView.adapter = component.citiesAdapter()
     }
 
+}
+
+
+@Module
+abstract class CityListActivityModule {
+
+    @Module
+    companion object {
+        @JvmStatic
+        @Provides
+        @PerActivity
+        fun twoPanel(activity: Activity): PanelMode {
+            return if (activity.city_detail_container != null) PanelMode.TWO_PANE
+            else PanelMode.SINGLE
+        }
+    }
+}
+
+enum class PanelMode {
+    SINGLE, TWO_PANE
 }

@@ -6,8 +6,6 @@ import dagger.Provides
 import io.objectbox.Box
 import io.objectbox.BoxStore
 import tomaszgorecki.simpleweather.inject.AppContext
-import tomaszgorecki.simpleweather.network.MyObjectBox
-import tomaszgorecki.simpleweather.network.OpenWeatherCityEntity
 import javax.inject.Singleton
 
 @Module

@@ -13,7 +13,7 @@ import javax.inject.Singleton
 @Component(modules = arrayOf(AppModule::class, NetworkModule::class, DbModule::class))
 interface AppComponent {
 
-    fun newActivityComponent(activity: ActivityModule): ActivityComponent
+    fun newActivityComponent(activity: ActivityModule): CityListActivityComponent
     fun gson(): Gson
 
     @Component.Builder

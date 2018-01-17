@@ -13,7 +13,6 @@ import java.util.*
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
-@Qualifier annotation class AccuWeather
 @Qualifier annotation class OpenWeather
 
 @Module abstract class NetworkModule {
@@ -34,17 +33,6 @@ import javax.inject.Singleton
                     .create()
         }
 
-
-        @Singleton
-        @Provides
-        @AccuWeather
-        @JvmStatic
-        fun accuWeather(gson: Gson): Retrofit {
-            return Retrofit.Builder().baseUrl(AccuweatherService.BASE_URI)
-                    .addConverterFactory(GsonConverterFactory.create(gson))
-                    .addCallAdapterFactory(createWithScheduler(Schedulers.io()))
-                    .build()
-        }
         @Singleton
         @Provides
         @OpenWeather
@@ -58,14 +46,6 @@ import javax.inject.Singleton
                     .addConverterFactory(GsonConverterFactory.create(gson))
                     .addCallAdapterFactory(createWithScheduler(Schedulers.io()))
                     .build()
-        }
-
-
-        @Singleton
-        @Provides
-        @JvmStatic
-        fun accuweatherService(@AccuWeather retrofit: Retrofit): AccuweatherService {
-            return retrofit.create(AccuweatherService::class.java)
         }
 
         @Singleton

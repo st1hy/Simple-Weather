@@ -2,20 +2,28 @@ package tomaszgorecki.simpleweather.activities
 
 import android.content.Intent
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import io.objectbox.Box
 import kotlinx.android.synthetic.main.city_list_content.view.*
 import tomaszgorecki.simpleweather.R
-import tomaszgorecki.simpleweather.network.OpenWeatherCityEntity
+import tomaszgorecki.simpleweather.model.OpenWeatherCityEntity
+import javax.inject.Inject
 
-
-class CitiesRecyclerViewAdapter(private val mParentActivity: CityListActivity,
-                                private val mValues: List<OpenWeatherCityEntity>,
-                                private val mTwoPane: Boolean) :
+class CitiesRecyclerViewAdapter @Inject constructor() :
         RecyclerView.Adapter<CitiesRecyclerViewAdapter.ViewHolder>() {
+
+    @Inject lateinit var activity: AppCompatActivity
+    @Inject lateinit var mode: PanelMode
+    @Inject lateinit var cityBox: Box<OpenWeatherCityEntity>
+    val values: List<OpenWeatherCityEntity> by lazy {
+        cityBox.query().sort({ o1, o2 -> o2.lastUsed.compareTo(o1.lastUsed) })
+            .build().find().toList()
+    }
 
     private val mOnClickListener: View.OnClickListener
 
@@ -27,18 +35,20 @@ class CitiesRecyclerViewAdapter(private val mParentActivity: CityListActivity,
     }
 
     fun performClick(item: OpenWeatherCityEntity) {
-        if (mTwoPane) {
+        if (mode == PanelMode.TWO_PANE) {
             val fragment = CityDetailFragment().apply {
                 arguments = Bundle().apply {
                     putParcelable(CityDetailFragment.ARG_ITEM, item)
                 }
             }
-            mParentActivity.supportFragmentManager.beginTransaction().replace(R.id.city_detail_container, fragment).commit()
+            activity.supportFragmentManager.beginTransaction()
+                    .replace(R.id.city_detail_container, fragment)
+                    .commit()
         } else {
-            val intent = Intent(mParentActivity, CityDetailActivity::class.java).apply {
+            val intent = Intent(activity, CityDetailActivity::class.java).apply {
                 putExtra(CityDetailFragment.ARG_ITEM, item)
             }
-            mParentActivity.startActivity(intent)
+            activity.startActivity(intent)
         }
     }
 
@@ -49,8 +59,9 @@ class CitiesRecyclerViewAdapter(private val mParentActivity: CityListActivity,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = mValues[position]
-        holder.name.text = item.name
+        val item = values[position].also {
+            holder.name.text = "${it.name}, ${it.city?.sys?.country}"
+        }
 
         with(holder.itemView) {
             tag = item
@@ -59,7 +70,7 @@ class CitiesRecyclerViewAdapter(private val mParentActivity: CityListActivity,
     }
 
     override fun getItemCount(): Int {
-        return mValues.size
+        return values.size
     }
 
     inner class ViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
