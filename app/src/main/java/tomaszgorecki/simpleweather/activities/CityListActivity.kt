@@ -3,9 +3,10 @@ package tomaszgorecki.simpleweather.activities
 import android.Manifest
 import android.os.Bundle
 import android.support.v7.widget.RecyclerView
-import com.google.common.collect.Collections2
-import com.google.common.collect.Iterables
+import com.arlib.floatingsearchview.FloatingSearchView
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
 import com.tbruyelle.rxpermissions2.RxPermissions
+import io.objectbox.Box
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.activity_city_list.*
@@ -14,17 +15,16 @@ import timber.log.Timber
 import tomaszgorecki.simpleweather.R
 import tomaszgorecki.simpleweather.activities.base.BaseActivity
 import tomaszgorecki.simpleweather.inject.ActivityModule
-import tomaszgorecki.simpleweather.model.DummyContent
-import tomaszgorecki.simpleweather.network.AccuweatherService
-import tomaszgorecki.simpleweather.network.CityCandidates
+import tomaszgorecki.simpleweather.network.*
 import java.util.*
 import javax.inject.Inject
 
-class CityListActivity : BaseActivity() {
+class CityListActivity : BaseActivity(), FloatingSearchView.OnSearchListener {
 
     private var mTwoPane: Boolean = false
-    @Inject lateinit var weatherService: AccuweatherService
+    @Inject lateinit var weatherService: OpenWeatherMapService
     @Inject lateinit var rxPermissions: RxPermissions
+    @Inject lateinit var cityBox: Box<OpenWeatherCityEntity>
     var searchingDisposable: Disposable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,36 +33,76 @@ class CityListActivity : BaseActivity() {
         getAppComponent().newActivityComponent(ActivityModule(this)).inject(this)
         city_detail_container?.let { mTwoPane = true }
         setupRecyclerView(city_list)
-        floating_search_view.setCloseSearchOnKeyboardDismiss(true)
-        floating_search_view.setOnQueryChangeListener { oldQuery, newQuery -> run {
-            searchingDisposable?.dispose()
-            if (newQuery.isNullOrBlank()) floating_search_view.clearSuggestions()
-            else {
-                val langCode = Locale.getDefault().language
-                searchingDisposable = weatherService.autompleteCity(languageCode = langCode, query = newQuery)
-                        .doOnSubscribe({ floating_search_view.showProgress() })
-                        .observeOn(AndroidSchedulers.mainThread())
-                        .doFinally({ floating_search_view.hideProgress() })
-                        .subscribe(::onResponse, Timber::e)
-            }
-        }}
+        setupFloatingSearchView()
 
         rxPermissions.request(Manifest.permission.INTERNET).subscribe({ granted -> if (!granted) finish() })
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        searchingDisposable?.dispose()
+    private fun setupFloatingSearchView() {
+        floating_search_view.apply {
+            setCloseSearchOnKeyboardDismiss(true)
+            setOnQueryChangeListener { _, newQuery -> run {
+                    clearSearch()
+                    if (newQuery.isNullOrBlank()) floating_search_view.clearSuggestions()
+                    else {
+                        searchingDisposable = weatherService.find(query = newQuery)
+                                .doOnSubscribe({ floating_search_view.showProgress() })
+                                .observeOn(AndroidSchedulers.mainThread())
+                                .doFinally({ floating_search_view.hideProgress() })
+                                .subscribe(::onResponse, { Timber.e(it.message) })
+                    }
+                }
+            }
+            setCloseSearchOnKeyboardDismiss(true)
+            setDismissFocusOnItemSelection(true)
+            setOnSearchListener(this@CityListActivity)
+        }
     }
 
-    private fun onResponse(response: Collection<CityCandidates>) {
-        Timber.d(Iterables.toString(response))
-        val suggestions = Collections2.transform(response, { r -> r.getSuggestion() })
-        floating_search_view.swapSuggestions(suggestions.toMutableList())
+    override fun onDestroy() {
+        super.onDestroy()
+        clearSearch()
+    }
+
+    private fun clearSearch() {
+        searchingDisposable?.dispose()
+        searchingDisposable = null
+    }
+
+    private fun onResponse(response: OpenWeatherFindResult) {
+        Timber.d("Result $response")
+        if (response.cities != null && response.cities.isNotEmpty()) {
+            floating_search_view.swapSuggestions(response.cities)
+        } else {
+            floating_search_view.clearSuggestions()
+        }
+    }
+
+    override fun onSearchAction(currentQuery: String?) {
+    }
+
+    override fun onSuggestionClicked(searchSuggestion: SearchSuggestion?) {
+        searchSuggestion?.let { onClicked(it as OpenWeatherCity)}
+    }
+
+    private fun onClicked(city: OpenWeatherCity) {
+        val list = cityBox.find(OpenWeatherCityEntity_.cityId, city.id)
+        val searchCity = if (list.isNotEmpty()) {
+            val searchCity = list.first()
+            searchCity.lastUsed = Date()
+            searchCity
+        } else {
+            city.toEntity()
+        }
+        cityBox.put(searchCity)
+        setupRecyclerView(city_list)
+        (city_list.adapter as CitiesRecyclerViewAdapter).performClick(searchCity)
     }
 
     private fun setupRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.adapter = SimpleItemRecyclerViewAdapter(this, DummyContent.ITEMS, mTwoPane)
+        val list = cityBox.query().sort({ o1, o2 -> o1.lastUsed.compareTo(o2.lastUsed) })
+                .build().find()
+        recyclerView.adapter = CitiesRecyclerViewAdapter(this, list, mTwoPane)
     }
 
 }

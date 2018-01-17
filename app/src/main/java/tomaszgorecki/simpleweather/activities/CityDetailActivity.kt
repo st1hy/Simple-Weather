@@ -30,8 +30,8 @@ class CityDetailActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
             val fragment = CityDetailFragment().apply {
                 arguments = Bundle().apply {
-                    putString(CityDetailFragment.ARG_ITEM_ID,
-                            intent.getStringExtra(CityDetailFragment.ARG_ITEM_ID))
+                    putParcelable(CityDetailFragment.ARG_ITEM,
+                            intent.getParcelableExtra(CityDetailFragment.ARG_ITEM))
                 }
             }
 
