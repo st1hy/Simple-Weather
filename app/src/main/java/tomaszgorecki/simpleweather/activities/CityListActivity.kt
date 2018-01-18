@@ -3,7 +3,6 @@ package tomaszgorecki.simpleweather.activities
 import android.Manifest
 import android.app.Activity
 import android.os.Bundle
-import android.support.v7.widget.RecyclerView
 import android.text.InputFilter
 import android.widget.EditText
 import com.arlib.floatingsearchview.FloatingSearchView
@@ -27,7 +26,6 @@ import tomaszgorecki.simpleweather.model.OpenWeatherCityEntity
 import tomaszgorecki.simpleweather.model.OpenWeatherCityEntity_
 import tomaszgorecki.simpleweather.model.OpenWeatherFindResult
 import tomaszgorecki.simpleweather.network.OpenWeatherMapService
-import java.util.*
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -36,7 +34,7 @@ class CityListActivity : BaseActivity(), FloatingSearchView.OnSearchListener {
     @Inject lateinit var weatherService: OpenWeatherMapService
     @Inject lateinit var rxPermissions: RxPermissions
     @Inject lateinit var cityBox: Box<OpenWeatherCityEntity>
-
+    @Inject lateinit var adapter: CitiesRecyclerViewAdapter
     private lateinit var component: CityListActivityComponent
     private var searchingDisposable: Disposable? = null
 
@@ -45,9 +43,8 @@ class CityListActivity : BaseActivity(), FloatingSearchView.OnSearchListener {
         setContentView(R.layout.activity_city_list)
         component = getAppComponent().newActivityComponent(ActivityModule(this))
         component.inject(this)
-        setupRecyclerView(city_list)
+        city_list.adapter = adapter
         setupFloatingSearchView()
-
         rxPermissions.request(Manifest.permission.INTERNET)
                 .subscribe({ if (!it) finish() })
     }
@@ -107,22 +104,16 @@ class CityListActivity : BaseActivity(), FloatingSearchView.OnSearchListener {
         searchSuggestion?.let { onClicked(it as OpenWeatherCity)}
     }
 
-    private fun onClicked(city: OpenWeatherCity) {
-        val list = cityBox.find(OpenWeatherCityEntity_.cityId, city.id)
+    private fun onClicked(searched: OpenWeatherCity) {
+        val list = cityBox.find(OpenWeatherCityEntity_.cityId, searched.id)
         val searchCity = if (list.isNotEmpty()) {
-            val searchCity = list.first()
-            searchCity.lastUsed = Date()
-            searchCity
+            list.first().update(searched)
         } else {
-            city.toEntity()
+            searched.toEntity()
         }
         cityBox.put(searchCity)
-        setupRecyclerView(city_list)
-        (city_list.adapter as CitiesRecyclerViewAdapter).performClick(searchCity)
-    }
-
-    private fun setupRecyclerView(recyclerView: RecyclerView) {
-        recyclerView.adapter = component.citiesAdapter()
+        adapter.refresh()
+        adapter.performClick(searchCity)
     }
 
 }

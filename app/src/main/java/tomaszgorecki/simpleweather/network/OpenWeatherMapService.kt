@@ -3,6 +3,7 @@ package tomaszgorecki.simpleweather.network
 import io.reactivex.Single
 import retrofit2.http.GET
 import retrofit2.http.Query
+import tomaszgorecki.simpleweather.model.OpenWeatherCity
 import tomaszgorecki.simpleweather.model.OpenWeatherFindResult
 import java.util.*
 
@@ -16,6 +17,15 @@ interface OpenWeatherMapService {
             @Query("units") units: Units = Units.METRIC,
             @Query("lang") lang: String = Locale.getDefault().language
     ) : Single<OpenWeatherFindResult>
+
+
+    @GET("weather")
+    fun weather(
+            @Query("appid") apiId: String = API_KEY,
+            @Query("id") cityId: Long?,
+            @Query("units") units: Units = Units.METRIC,
+            @Query("lang") lang: String = Locale.getDefault().language
+    ) : Single<OpenWeatherCity>
 
     companion object {
         const val API_KEY = "577648702833ddcd32cca67396304083"

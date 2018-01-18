@@ -1,7 +1,6 @@
 package tomaszgorecki.simpleweather.inject
 
 import dagger.Subcomponent
-import tomaszgorecki.simpleweather.activities.CitiesRecyclerViewAdapter
 import tomaszgorecki.simpleweather.activities.CityListActivity
 import tomaszgorecki.simpleweather.activities.CityListActivityModule
 
@@ -10,7 +9,5 @@ import tomaszgorecki.simpleweather.activities.CityListActivityModule
 interface CityListActivityComponent {
 
     fun inject(activity: CityListActivity)
-
-    fun citiesAdapter(): CitiesRecyclerViewAdapter
 
 }

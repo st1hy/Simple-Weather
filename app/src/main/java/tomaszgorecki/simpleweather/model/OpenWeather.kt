@@ -9,6 +9,7 @@ import io.objectbox.annotation.Id
 import io.objectbox.converter.PropertyConverter
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
+import timber.log.Timber
 import tomaszgorecki.simpleweather.app.WeatherApp
 import java.util.*
 
@@ -28,15 +29,27 @@ data class OpenWeatherFindResult(
 data class OpenWeatherCityEntity(
         @Id var id: Long,
         val cityId: Long,
-        val name: String?,
+        var name: String?,
         var lastUsed: Date,
         @Convert(converter = JsonConverter::class, dbType = String::class)
-        val city: OpenWeatherCity) : PaperParcelable {
+        var city: OpenWeatherCity
+) : PaperParcelable {
 
     constructor(city: OpenWeatherCity) : this(0, city.id, city.name, Date(), city)
 
     companion object {
         @JvmField val CREATOR = PaperParcelOpenWeatherCityEntity.CREATOR
+    }
+
+    fun update(newCity: OpenWeatherCity): OpenWeatherCityEntity {
+        if (cityId != newCity.id) {
+            Timber.e("City id changed (!) old: $cityId , new ${newCity.id}")
+        } else {
+            lastUsed = Date()
+            city = newCity
+            name = newCity.name
+        }
+        return this
     }
 }
 
@@ -51,7 +64,10 @@ data class OpenWeatherCity(
         val snow: OpenWeatherSnow?,
         val rain: OpenWeatherRain?,
         val clouds: OpenWeatherClouds?,
-        val weather: List<OpenWeatherInner>?
+        val weather: List<OpenWeatherInner>?,
+        val visibility: Int?,
+        val cod: Int?,
+        val base: String?
 ) : PaperParcelable, SearchSuggestion {
 
     companion object {
@@ -110,7 +126,12 @@ data class OpenWeatherWind(
 
 @PaperParcel
 data class OpenWeatherSys(
-        val country: String?
+        val country: String?,
+        val type: Int?,
+        val id: Int?,
+        val sunrise: Date?,
+        val sunset: Date?,
+        val message: Float?
 ) : PaperParcelable {
     companion object {
         @JvmField val CREATOR = PaperParcelOpenWeatherSys.CREATOR
@@ -147,7 +168,8 @@ data class OpenWeatherClouds(
 @PaperParcel
 data class OpenWeatherInner(
         val id: Int?,
-        val main: String?,
+        @SerializedName("main")
+        val name: String?,
         val description: String?,
         val icon: String?
 ) : PaperParcelable {

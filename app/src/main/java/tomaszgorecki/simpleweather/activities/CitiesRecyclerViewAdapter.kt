@@ -9,9 +9,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import io.objectbox.Box
+import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.city_list_content.view.*
+import timber.log.Timber
 import tomaszgorecki.simpleweather.R
 import tomaszgorecki.simpleweather.model.OpenWeatherCityEntity
+import tomaszgorecki.simpleweather.network.OpenWeatherMapService
+import java.util.*
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class CitiesRecyclerViewAdapter @Inject constructor() :
@@ -20,9 +25,13 @@ class CitiesRecyclerViewAdapter @Inject constructor() :
     @Inject lateinit var activity: AppCompatActivity
     @Inject lateinit var mode: PanelMode
     @Inject lateinit var cityBox: Box<OpenWeatherCityEntity>
-    val values: List<OpenWeatherCityEntity> by lazy {
-        cityBox.query().sort({ o1, o2 -> o2.lastUsed.compareTo(o1.lastUsed) })
-            .build().find().toList()
+    @Inject lateinit var openweather: OpenWeatherMapService
+    var values: List<OpenWeatherCityEntity>? = null
+    get() {
+        if (field == null) {
+            field = queryContent()
+        }
+        return field
     }
 
     private val mOnClickListener: View.OnClickListener
@@ -35,6 +44,30 @@ class CitiesRecyclerViewAdapter @Inject constructor() :
     }
 
     fun performClick(item: OpenWeatherCityEntity) {
+        if (item.lastUsed.durationTill(now(), TimeUnit.MINUTES) > 10) {
+            openweather.weather(cityId = item.cityId)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({
+                        item.update(it)
+                        cityBox.put(item)
+                        refresh()
+                        navigateToDetail(item)
+                    }, { Timber.e(it.message)})
+        } else {
+            navigateToDetail(item)
+        }
+    }
+
+    fun refresh() {
+        values = queryContent()
+        notifyDataSetChanged()
+    }
+
+    private fun queryContent() = cityBox.query()
+            .sort({ o1, o2 -> o2.lastUsed.compareTo(o1.lastUsed) })
+            .build().find().toList()
+
+    fun navigateToDetail(item: OpenWeatherCityEntity) {
         if (mode == PanelMode.TWO_PANE) {
             val fragment = CityDetailFragment().apply {
                 arguments = Bundle().apply {
@@ -59,7 +92,7 @@ class CitiesRecyclerViewAdapter @Inject constructor() :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = values[position].also {
+        val item = values!![position].also {
             holder.name.text = "${it.name}, ${it.city?.sys?.country}"
         }
 
@@ -70,10 +103,16 @@ class CitiesRecyclerViewAdapter @Inject constructor() :
     }
 
     override fun getItemCount(): Int {
-        return values.size
+        return values!!.size
     }
 
     inner class ViewHolder(mView: View) : RecyclerView.ViewHolder(mView) {
         val name: TextView = mView.city_name
     }
 }
+
+fun Date.durationTill(other: Date, timeUnit: TimeUnit): Long {
+    return timeUnit.convert(Math.abs(time - other.time), TimeUnit.MILLISECONDS)
+}
+
+fun now(): Date = Date()
