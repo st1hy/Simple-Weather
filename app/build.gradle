@@ -12,6 +12,7 @@ android {
         versionCode 1
         versionName "0.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -46,6 +47,7 @@ dependencies {
     implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
     implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
     implementation 'io.reactivex.rxjava2:rxjava:2.1.8'
+    implementation 'io.reactivex.rxjava2:rxkotlin:2.2.0'
     implementation "com.jakewharton.rxbinding2:rxbinding:$rxbindings_version"
 
     implementation 'nz.bradcampbell:paperparcel:2.0.4'

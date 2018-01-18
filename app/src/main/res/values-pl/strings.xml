@@ -1,10 +1,9 @@
 <resources>
-    <string name="app_name">Simple Weather</string>
-    <string name="title_city_detail">City Detail</string>
-    <string name="search_label">Search city</string>
-    <string name="search_hint">Search city to find current weather</string>
-    <string name="city_name_format">%1$s, %2$s</string>
-    <string name="city_temp_label">Temperature</string>
-    <string name="city_min_temp_label">Min temperature</string>
-    <string name="city_max_temp_label">Max temperature</string>
+    <string name="app_name">Prosta pogoda</string>
+    <string name="title_city_detail">Detale miasta</string>
+    <string name="search_label">Wyszukaj miasto</string>
+    <string name="search_hint">Wyszukaj miasto aby pobrać pogodę</string>
+    <string name="city_temp_label">Temperatura</string>
+    <string name="city_min_temp_label">Temperatura minimalna</string>
+    <string name="city_max_temp_label">Temperatura maksymalna</string>
 </resources>

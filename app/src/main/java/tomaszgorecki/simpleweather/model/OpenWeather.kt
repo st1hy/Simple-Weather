@@ -90,11 +90,12 @@ data class OpenWeatherCity(
     fun getTemperature(): String = tempStringOf(main?.temp)
     fun getMinTemperature(): String = tempStringOf(main?.temp_min)
     fun getMaxTemperature(): String = tempStringOf(main?.temp_max)
-
+    fun getMinTemp(): Float? = main?.temp_min
+    fun getMaxTemp(): Float? = main?.temp_max
     private fun tempStringOf(temp: Float?): String = if (temp != null) "$temp °C" else ""
 
-    fun tempColor(): Int {
-        val temp = main?.temp
+    fun tempColor(): Int = tempColor(main?.temp)
+    fun tempColor(temp: Float?): Int {
         return when {
             temp == null -> Color.BLACK
             temp < 10 -> Color.BLUE
@@ -102,6 +103,7 @@ data class OpenWeatherCity(
             else -> Color.BLACK
         }
     }
+
     fun hasWeatherIcon(): Boolean = weather?.firstOrNull()?.icon != null
     fun getWeatherName(): String = weather?.firstOrNull()?.description ?: ""
     fun getWeatherIcon(): String? = weather?.firstOrNull()?.icon?.let {

@@ -26,6 +26,8 @@ import tomaszgorecki.simpleweather.model.OpenWeatherCityEntity
 import tomaszgorecki.simpleweather.model.OpenWeatherCityEntity_
 import tomaszgorecki.simpleweather.model.OpenWeatherFindResult
 import tomaszgorecki.simpleweather.network.OpenWeatherMapService
+import tomaszgorecki.simpleweather.utils.queryChanges
+import java.util.concurrent.TimeUnit
 import java.util.regex.Pattern
 import javax.inject.Inject
 
@@ -37,6 +39,7 @@ class CityListActivity : BaseActivity(), FloatingSearchView.OnSearchListener {
     @Inject lateinit var adapter: CitiesRecyclerViewAdapter
     private lateinit var component: CityListActivityComponent
     private var searchingDisposable: Disposable? = null
+    private var queryDisposable: Disposable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,18 +55,20 @@ class CityListActivity : BaseActivity(), FloatingSearchView.OnSearchListener {
     private fun setupFloatingSearchView() {
         floating_search_view.apply {
             setCloseSearchOnKeyboardDismiss(true)
-            setOnQueryChangeListener { _, newQuery -> run {
-                    clearSearch()
-                    if (newQuery.isNullOrBlank()) floating_search_view.clearSuggestions()
-                    else {
-                        searchingDisposable = weatherService.find(query = newQuery)
-                                .doOnSubscribe({ floating_search_view.showProgress() })
-                                .observeOn(AndroidSchedulers.mainThread())
-                                .doFinally({ floating_search_view.hideProgress() })
-                                .subscribe(::onResponse, { Timber.e(it.message) })
-                    }
-                }
-            }
+            queryDisposable = queryChanges().skipInitialValue()
+                    .debounce(300, TimeUnit.MILLISECONDS)
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ newQuery: CharSequence -> run {
+                        clearSearch()
+                        if (newQuery.isBlank()) floating_search_view.clearSuggestions()
+                        else {
+                            searchingDisposable = weatherService.find(query = newQuery.toString())
+                                    .doOnSubscribe({ floating_search_view.showProgress() })
+                                    .observeOn(AndroidSchedulers.mainThread())
+                                    .doFinally({ floating_search_view.hideProgress() })
+                                    .subscribe(::onResponse, { Timber.e(it.message) })
+                        }
+                    }})
             setDismissFocusOnItemSelection(true)
             setOnSearchListener(this@CityListActivity)
             filterInput()
@@ -81,6 +86,8 @@ class CityListActivity : BaseActivity(), FloatingSearchView.OnSearchListener {
     override fun onDestroy() {
         super.onDestroy()
         clearSearch()
+        queryDisposable?.dispose()
+        queryDisposable = null
     }
 
     private fun clearSearch() {

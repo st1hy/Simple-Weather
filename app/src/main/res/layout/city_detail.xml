@@ -5,8 +5,8 @@
     <data>
         <import type="android.view.View"/>
         <variable
-            name="entity"
-            type="tomaszgorecki.simpleweather.model.OpenWeatherCityEntity"/>
+            name="city"
+            type="tomaszgorecki.simpleweather.model.OpenWeatherCity"/>
     </data>
 
     <LinearLayout
@@ -25,7 +25,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:visibility="@{entity.city.hasTemperature}">
+            android:visibility="@{city.hasTemperature}">
 
             <TextView
                 style="?android:attr/textAppearanceMedium"
@@ -40,8 +40,8 @@
                 style="?android:attr/textAppearanceLarge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{entity.city.temperature}"
-                android:textColor="@{entity.city.tempColor}"
+                android:text="@{city.temperature}"
+                android:textColor="@{city.tempColor}"
                 android:layout_gravity="end"
                 android:textIsSelectable="true" />
         </LinearLayout>
@@ -53,7 +53,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:visibility="@{entity.city.hasMinTemperature}">
+            android:visibility="@{city.hasMinTemperature}">
 
             <TextView
                 style="?android:attr/textAppearanceSmall"
@@ -68,8 +68,8 @@
                 style="?android:attr/textAppearanceMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{entity.city.minTemperature}"
-                android:textColor="@{entity.city.tempColor}"
+                android:text="@{city.minTemperature}"
+                android:textColor="@{city.tempColor(city.minTemp)}"
                 android:layout_gravity="end"
                 android:textIsSelectable="true" />
         </LinearLayout>
@@ -81,7 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:visibility="@{entity.city.hasMaxTemperature}">
+            android:visibility="@{city.hasMaxTemperature}">
 
             <TextView
                 style="?android:attr/textAppearanceSmall"
@@ -96,8 +96,8 @@
                 style="?android:attr/textAppearanceMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@{entity.city.maxTemperature}"
-                android:textColor="@{entity.city.tempColor}"
+                android:text="@{city.maxTemperature}"
+                android:textColor="@{city.tempColor(city.maxTemp)}"
                 android:layout_gravity="end"
                 android:textIsSelectable="true" />
         </LinearLayout>
@@ -111,20 +111,20 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center"
-            android:visibility="@{entity.city.hasWeatherIcon}">
+            android:visibility="@{city.hasWeatherIcon}">
 
             <TextView
                 style="?android:attr/textAppearanceSmall"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@{entity.city.weatherName}"
+                android:text="@{city.weatherName}"
                 android:textIsSelectable="true" />
 
             <ImageView
                 android:layout_width="50dp"
                 android:layout_height="50dp"
-                app:url="@{entity.city.weatherIcon}"
+                app:url="@{city.weatherIcon}"
                 android:layout_gravity="end"
                 android:textIsSelectable="true" />
         </LinearLayout>

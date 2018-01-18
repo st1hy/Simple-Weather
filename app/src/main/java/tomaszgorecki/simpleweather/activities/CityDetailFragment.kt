@@ -30,10 +30,9 @@ class CityDetailFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.city_detail, container, false)
-        binding.entity = entity
+        binding.city = entity?.city
         return binding.root
     }
-
 
     companion object {
         const val ARG_ITEM = "item"

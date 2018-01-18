@@ -98,7 +98,7 @@ class CitiesRecyclerViewAdapter @Inject constructor() :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values!![position].also {
-            holder.name.text = "${it.name}, ${it.city?.sys?.country}"
+            holder.name.text = "${it.name}, ${it.city.sys?.country}"
         }
 
         with(holder.itemView) {
