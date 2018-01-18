@@ -30,6 +30,7 @@ interface OpenWeatherMapService {
     companion object {
         const val API_KEY = "577648702833ddcd32cca67396304083"
         const val BASE_URI = "http://api.openweathermap.org/data/2.5/"
+        const val ICON_BASE_URI = "http://openweathermap.org/img/w/"
     }
 }
 

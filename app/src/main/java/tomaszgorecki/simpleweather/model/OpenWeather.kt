@@ -11,6 +11,7 @@ import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 import timber.log.Timber
 import tomaszgorecki.simpleweather.app.WeatherApp
+import tomaszgorecki.simpleweather.network.OpenWeatherMapService
 import java.util.*
 
 @PaperParcel
@@ -82,13 +83,15 @@ data class OpenWeatherCity(
         return OpenWeatherCityEntity(this)
     }
 
-    fun temperature(): String {
-        val temp = main?.temp
-        return if (temp != null) {
-            //TODO Use the same units that where used in query
-            "$temp °C"
-        } else ""
-    }
+    fun hasTemperature(): Boolean = main?.temp != null
+    fun hasMinTemperature(): Boolean = main?.temp_min != null
+    fun hasMaxTemperature(): Boolean = main?.temp_max != null
+
+    fun getTemperature(): String = tempStringOf(main?.temp)
+    fun getMinTemperature(): String = tempStringOf(main?.temp_min)
+    fun getMaxTemperature(): String = tempStringOf(main?.temp_max)
+
+    private fun tempStringOf(temp: Float?): String = if (temp != null) "$temp °C" else ""
 
     fun tempColor(): Int {
         val temp = main?.temp
@@ -98,6 +101,11 @@ data class OpenWeatherCity(
             temp > 20 -> Color.RED
             else -> Color.BLACK
         }
+    }
+    fun hasWeatherIcon(): Boolean = weather?.firstOrNull()?.icon != null
+    fun getWeatherName(): String = weather?.firstOrNull()?.description ?: ""
+    fun getWeatherIcon(): String? = weather?.firstOrNull()?.icon?.let {
+        OpenWeatherMapService.ICON_BASE_URI + it + ".png"
     }
 }
 

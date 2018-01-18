@@ -1,7 +1,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="entity"
             type="tomaszgorecki.simpleweather.model.OpenWeatherCityEntity"/>
@@ -11,38 +13,120 @@
         android:id="@+id/city_detail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp"
+        android:paddingStart="32dp"
+        android:paddingEnd="32dp"
+        android:orientation="vertical"
         tools:context="tomaszgorecki.simpleweather.activities.CityDetailFragment">
 
+        <android.support.v4.widget.Space
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="bottom">
+            android:visibility="@{entity.city.hasTemperature}">
 
             <TextView
-                android:id="@+id/city_detail_temp_label"
                 style="?android:attr/textAppearanceMedium"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="bottom"
-                android:padding="16dp"
                 android:text="@string/city_temp_label"
                 android:textIsSelectable="true" />
 
             <TextView
-                android:id="@+id/city_detail_name"
                 style="?android:attr/textAppearanceLarge"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="16dp"
-                android:text="@{entity.city.temperature()}"
-                android:textColor="@{entity.city.tempColor()}"
+                android:text="@{entity.city.temperature}"
+                android:textColor="@{entity.city.tempColor}"
+                android:layout_gravity="end"
+                android:textIsSelectable="true" />
+        </LinearLayout>
+        <android.support.v4.widget.Space
+            android:layout_width="match_parent"
+            android:layout_height="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="@{entity.city.hasMinTemperature}">
+
+            <TextView
+                style="?android:attr/textAppearanceSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="bottom"
+                android:text="@string/city_min_temp_label"
+                android:textIsSelectable="true" />
+
+            <TextView
+                style="?android:attr/textAppearanceMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{entity.city.minTemperature}"
+                android:textColor="@{entity.city.tempColor}"
                 android:layout_gravity="end"
                 android:textIsSelectable="true" />
         </LinearLayout>
 
+        <android.support.v4.widget.Space
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="@{entity.city.hasMaxTemperature}">
+
+            <TextView
+                style="?android:attr/textAppearanceSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="bottom"
+                android:text="@string/city_max_temp_label"
+                android:textIsSelectable="true" />
+
+            <TextView
+                style="?android:attr/textAppearanceMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{entity.city.maxTemperature}"
+                android:textColor="@{entity.city.tempColor}"
+                android:layout_gravity="end"
+                android:textIsSelectable="true" />
+        </LinearLayout>
+
+        <android.support.v4.widget.Space
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:visibility="@{entity.city.hasWeatherIcon}">
+
+            <TextView
+                style="?android:attr/textAppearanceSmall"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@{entity.city.weatherName}"
+                android:textIsSelectable="true" />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                app:url="@{entity.city.weatherIcon}"
+                android:layout_gravity="end"
+                android:textIsSelectable="true" />
+        </LinearLayout>
     </LinearLayout>
 </layout>

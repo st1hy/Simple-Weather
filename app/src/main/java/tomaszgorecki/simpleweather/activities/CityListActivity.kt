@@ -41,7 +41,7 @@ class CityListActivity : BaseActivity(), FloatingSearchView.OnSearchListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_city_list)
-        component = getAppComponent().newActivityComponent(ActivityModule(this))
+        component = getAppComponent().newCitiesActivityComponent(ActivityModule(this))
         component.inject(this)
         city_list.adapter = adapter
         setupFloatingSearchView()
@@ -113,7 +113,7 @@ class CityListActivity : BaseActivity(), FloatingSearchView.OnSearchListener {
         }
         cityBox.put(searchCity)
         adapter.refresh()
-        adapter.performClick(searchCity)
+        adapter.performClick(searchCity, false)
     }
 
 }

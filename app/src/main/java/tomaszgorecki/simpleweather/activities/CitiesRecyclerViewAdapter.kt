@@ -43,7 +43,7 @@ class CitiesRecyclerViewAdapter @Inject constructor() :
         }
     }
 
-    fun performClick(item: OpenWeatherCityEntity) {
+    fun performClick(item: OpenWeatherCityEntity, updateAccesTime: Boolean = true) {
         if (item.lastUsed.durationTill(now(), TimeUnit.MINUTES) > 10) {
             openweather.weather(cityId = item.cityId)
                     .observeOn(AndroidSchedulers.mainThread())
@@ -54,6 +54,11 @@ class CitiesRecyclerViewAdapter @Inject constructor() :
                         navigateToDetail(item)
                     }, { Timber.e(it.message)})
         } else {
+            if (updateAccesTime) {
+                item.lastUsed = Date()
+                cityBox.put(item)
+                refresh()
+            }
             navigateToDetail(item)
         }
     }
