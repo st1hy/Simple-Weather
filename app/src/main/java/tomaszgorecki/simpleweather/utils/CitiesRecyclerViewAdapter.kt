@@ -1,4 +1,4 @@
-package tomaszgorecki.simpleweather.activities
+package tomaszgorecki.simpleweather.utils
 
 import android.content.Intent
 import android.os.Bundle
@@ -13,13 +13,17 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import kotlinx.android.synthetic.main.city_list_content.view.*
 import timber.log.Timber
 import tomaszgorecki.simpleweather.R
+import tomaszgorecki.simpleweather.inject.PanelMode
+import tomaszgorecki.simpleweather.inject.PerActivity
 import tomaszgorecki.simpleweather.model.OpenWeatherCityEntity
-import tomaszgorecki.simpleweather.network.OpenWeatherMapService
+import tomaszgorecki.simpleweather.model.OpenWeatherMapService
+import tomaszgorecki.simpleweather.view.CityDetailActivity
+import tomaszgorecki.simpleweather.view.CityDetailFragment
 import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-class CitiesRecyclerViewAdapter @Inject constructor() :
+@PerActivity class CitiesRecyclerViewAdapter @Inject constructor() :
         RecyclerView.Adapter<CitiesRecyclerViewAdapter.ViewHolder>() {
 
     @Inject lateinit var activity: AppCompatActivity
@@ -27,12 +31,12 @@ class CitiesRecyclerViewAdapter @Inject constructor() :
     @Inject lateinit var cityBox: Box<OpenWeatherCityEntity>
     @Inject lateinit var openweather: OpenWeatherMapService
     var values: List<OpenWeatherCityEntity>? = null
-    get() {
-        if (field == null) {
-            field = queryContent()
+        get() {
+            if (field == null) {
+                field = queryContent()
+            }
+            return field
         }
-        return field
-    }
 
     private val mOnClickListener: View.OnClickListener
 
@@ -52,7 +56,7 @@ class CitiesRecyclerViewAdapter @Inject constructor() :
                         cityBox.put(item)
                         refresh()
                         navigateToDetail(item)
-                    }, { Timber.e(it.message)})
+                    }, { Timber.e(it.message) })
         } else {
             if (updateAccesTime) {
                 item.lastUsed = Date()
@@ -115,9 +119,3 @@ class CitiesRecyclerViewAdapter @Inject constructor() :
         val name: TextView = mView.city_name
     }
 }
-
-fun Date.durationTill(other: Date, timeUnit: TimeUnit): Long {
-    return timeUnit.convert(Math.abs(time - other.time), TimeUnit.MILLISECONDS)
-}
-
-fun now(): Date = Date()

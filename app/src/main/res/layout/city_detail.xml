@@ -16,7 +16,7 @@
         android:paddingStart="32dp"
         android:paddingEnd="32dp"
         android:orientation="vertical"
-        tools:context="tomaszgorecki.simpleweather.activities.CityDetailFragment">
+        tools:context="tomaszgorecki.simpleweather.view.CityDetailFragment">
 
         <android.support.v4.widget.Space
             android:layout_width="match_parent"

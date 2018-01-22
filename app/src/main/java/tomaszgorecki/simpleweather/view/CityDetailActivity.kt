@@ -1,4 +1,4 @@
-package tomaszgorecki.simpleweather.activities
+package tomaszgorecki.simpleweather.view
 
 import android.content.Intent
 import android.os.Bundle

@@ -3,15 +3,13 @@ package tomaszgorecki.simpleweather.inject
 import com.google.gson.Gson
 import dagger.BindsInstance
 import dagger.Component
-import tomaszgorecki.simpleweather.app.WeatherApp
-import tomaszgorecki.simpleweather.model.DbModule
-import tomaszgorecki.simpleweather.network.NetworkModule
+import dagger.Subcomponent
+import tomaszgorecki.simpleweather.WeatherApp
+import tomaszgorecki.simpleweather.view.CityListActivity
 import javax.inject.Singleton
 
-@Singleton
-@PerApp
-@Component(modules = arrayOf(AppModule::class, NetworkModule::class, DbModule::class))
-interface AppComponent {
+@Component(modules = arrayOf(AppModule::class))
+@Singleton @PerApp interface AppComponent {
 
     fun newCitiesActivityComponent(activity: ActivityModule): CityListActivityComponent
     fun gson(): Gson
@@ -23,4 +21,11 @@ interface AppComponent {
 
         fun create(): AppComponent
     }
+}
+
+@Subcomponent(modules = arrayOf(ActivityModule::class, CityListActivityModule::class))
+@PerActivity interface CityListActivityComponent {
+
+    fun inject(activity: CityListActivity)
+
 }

@@ -10,3 +10,5 @@ import javax.inject.Scope
 @Qualifier annotation class AppContext
 
 @Qualifier annotation class ActivityContext
+
+@Qualifier annotation class OpenWeather

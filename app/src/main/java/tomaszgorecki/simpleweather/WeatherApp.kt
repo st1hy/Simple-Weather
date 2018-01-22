@@ -1,4 +1,4 @@
-package tomaszgorecki.simpleweather.app
+package tomaszgorecki.simpleweather
 
 import android.app.Application
 import com.google.gson.Gson

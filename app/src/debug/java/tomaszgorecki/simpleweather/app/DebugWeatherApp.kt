@@ -1,6 +1,7 @@
 package tomaszgorecki.simpleweather.app
 
 import timber.log.Timber
+import tomaszgorecki.simpleweather.WeatherApp
 
 class DebugWeatherApp : WeatherApp() {
 

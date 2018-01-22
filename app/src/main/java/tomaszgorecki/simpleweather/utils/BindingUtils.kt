@@ -4,31 +4,38 @@ import android.databinding.BindingAdapter
 import android.databinding.BindingConversion
 import android.view.View
 import android.widget.ImageView
-import android.widget.TextView
-import com.bumptech.glide.Glide
+import com.arlib.floatingsearchview.FloatingSearchView
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion
+import io.reactivex.Observable
+import tomaszgorecki.simpleweather.viewmodel.CityListViewModel.SearchingState
 
 object BindingUtils {
 
-    @JvmStatic
-    @BindingAdapter("android:text")
-    fun setFloat(view: TextView, f: Float) {
-        view.text = if (!f.isNaN()) f.format(2) else ""
-    }
-
-    @JvmStatic
-    @BindingAdapter("app:url")
+    @BindingAdapter("app:url") @JvmStatic
     fun setImageViewUrl(view: ImageView, url: String?) = view.setUrl(url)
 
-    @JvmStatic
-    @BindingConversion
+    @BindingConversion @JvmStatic
     fun convertBooleanToVisibility(isVisible: Boolean): Int {
         return if (isVisible) View.VISIBLE else View.GONE
     }
 
-}
+    @BindingAdapter("queryChanges") @JvmStatic
+    fun queryChanges(view: FloatingSearchView, fn: SearchConsumer) = fn.accept(view.queryChanges())
 
-fun Float.format(digits: Int) = String.format("%.${digits}f", this)
+    @BindingAdapter("suggestions") @JvmStatic
+    fun setSuggestions(view: FloatingSearchView, list: List<SearchSuggestion>) =
+            view.swapSuggestions(list)
 
-fun ImageView.setUrl(url: String?) {
-    Glide.with(this).load(url).into(this)
+    @BindingAdapter("searchProgress") @JvmStatic
+    fun setProgress(view: FloatingSearchView, progress: SearchingState) =
+            when (progress) {
+                SearchingState.SEARCHING -> view.showProgress()
+                SearchingState.IDLE -> view.hideProgress()
+                else -> {}
+            }
+
+    interface SearchConsumer {
+        fun accept(observable: Observable<CharSequence>)
+    }
+
 }

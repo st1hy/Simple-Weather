@@ -1,4 +1,4 @@
-package tomaszgorecki.simpleweather.activities
+package tomaszgorecki.simpleweather.view
 
 import android.databinding.DataBindingUtil
 import android.os.Bundle
@@ -14,7 +14,7 @@ import tomaszgorecki.simpleweather.model.OpenWeatherCityEntity
 class CityDetailFragment : Fragment() {
 
     private var entity: OpenWeatherCityEntity? = null
-    private lateinit var binding : CityDetailBinding
+    private lateinit var binding: CityDetailBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

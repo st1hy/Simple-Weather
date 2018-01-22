@@ -1,48 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context="tomaszgorecki.simpleweather.activities.CityListActivity"
-    android:orientation="vertical">
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <data>
+        <variable
+            name="viewModel"
+            type="tomaszgorecki.simpleweather.viewmodel.CityListViewModel" />
+    </data>
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:fitsSystemWindows="true"
+        android:orientation="vertical"
+        tools:context="tomaszgorecki.simpleweather.view.CityListActivity">
 
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/app_bar"
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:theme="@style/AppTheme.AppBarOverlay">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <android.support.v7.widget.Toolbar
-                android:id="@+id/toolbar"
+            <android.support.design.widget.AppBarLayout
+                android:id="@+id/app_bar"
                 android:layout_width="match_parent"
-                android:layout_height="64dp"
-                app:popupTheme="@style/AppTheme.PopupOverlay" />
+                android:layout_height="wrap_content"
+                android:theme="@style/AppTheme.AppBarOverlay">
 
-        </android.support.design.widget.AppBarLayout>
-        <include layout="@layout/city_list" />
-    </LinearLayout>
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/toolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="64dp"
+                    app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    <com.arlib.floatingsearchview.FloatingSearchView
-        android:id="@+id/floating_search_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        style="@style/FloatingSearchView"
-        app:floatingSearch_searchBarMarginLeft="8dp"
-        app:floatingSearch_searchBarMarginTop="4dp"
-        app:floatingSearch_searchBarMarginRight="8dp"
-        app:floatingSearch_searchHint="@string/search_hint"
-        app:floatingSearch_suggestionsListAnimDuration="250"
-        app:floatingSearch_showSearchKey="false"
-        app:floatingSearch_leftActionMode="noLeftAction"
-        app:floatingSearch_menu="@menu/menu"
-        app:floatingSearch_close_search_on_keyboard_dismiss="true"/>
+            </android.support.design.widget.AppBarLayout>
 
-</FrameLayout>
+            <include layout="@layout/city_list" />
+        </LinearLayout>
+
+        <com.arlib.floatingsearchview.FloatingSearchView
+            android:id="@+id/floating_search_view"
+            style="@style/FloatingSearchView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:floatingSearch_close_search_on_keyboard_dismiss="true"
+            app:floatingSearch_dismissFocusOnItemSelection="true"
+            app:floatingSearch_leftActionMode="noLeftAction"
+            app:floatingSearch_menu="@menu/menu"
+            app:floatingSearch_searchBarMarginLeft="8dp"
+            app:floatingSearch_searchBarMarginRight="8dp"
+            app:floatingSearch_searchBarMarginTop="4dp"
+            app:floatingSearch_searchHint="@string/search_hint"
+            app:floatingSearch_showSearchKey="false"
+            app:floatingSearch_suggestionsListAnimDuration="250"
+            onSearchListener="@{viewModel.searchListener}"
+            suggestions="@{viewModel.suggestions}"
+            queryChanges="@{(observable) -> viewModel.queryChanges(observable)}"
+            searchProgress="@{viewModel.searchProgress}" />
+
+    </FrameLayout>
+</layout>
