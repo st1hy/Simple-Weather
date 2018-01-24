@@ -9,11 +9,11 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.activity_city_detail.*
 import tomaszgorecki.simpleweather.R
 import tomaszgorecki.simpleweather.databinding.CityDetailBinding
-import tomaszgorecki.simpleweather.model.OpenWeatherCityEntity
+import tomaszgorecki.simpleweather.model.CityEntity
 
 class CityDetailFragment : Fragment() {
 
-    private var entity: OpenWeatherCityEntity? = null
+    private var entity: CityEntity? = null
     private lateinit var binding: CityDetailBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {

@@ -6,6 +6,7 @@ import dagger.Component
 import dagger.Subcomponent
 import tomaszgorecki.simpleweather.WeatherApp
 import tomaszgorecki.simpleweather.view.CityListActivity
+import tomaszgorecki.simpleweather.viewmodel.CityListItemViewModel
 import javax.inject.Singleton
 
 @Component(modules = arrayOf(AppModule::class))
@@ -24,8 +25,19 @@ import javax.inject.Singleton
 }
 
 @Subcomponent(modules = arrayOf(ActivityModule::class, CityListActivityModule::class))
-@PerActivity interface CityListActivityComponent {
+@PerActivity interface CityListActivityComponent : CityListItemComponentBuilder {
 
     fun inject(activity: CityListActivity)
 
+}
+
+@Subcomponent(modules = arrayOf(CityListItemModule::class))
+@PerListItem interface CityListItemComponent {
+
+    fun newViewModel() : CityListItemViewModel
+
+}
+
+interface CityListItemComponentBuilder {
+    fun newCityListItemComponent(module: CityListItemModule): CityListItemComponent
 }

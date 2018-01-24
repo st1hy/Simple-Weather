@@ -7,33 +7,36 @@ import com.google.gson.annotations.SerializedName
 import io.objectbox.annotation.Convert
 import io.objectbox.annotation.Entity
 import io.objectbox.annotation.Id
+import io.objectbox.annotation.Uid
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 import timber.log.Timber
 import tomaszgorecki.simpleweather.utils.JsonConverter
 import java.util.*
 
-
-@Entity @PaperParcel data class OpenWeatherCityEntity(
+@Uid(9083887423634301212)
+@Entity @PaperParcel data class CityEntity(
         @Id var id: Long,
         val cityId: Long,
         var name: String?,
         var lastUsed: Date,
+        var lastUpdated: Date?,
         @Convert(converter = JsonConverter::class, dbType = String::class)
-        var city: OpenWeatherCity
+        var city: City
 ) : PaperParcelable {
 
-    constructor(city: OpenWeatherCity) : this(0, city.id, city.name, Date(), city)
+    constructor(city: City) : this(0, city.id, city.name, Date(), Date(), city)
 
     companion object {
-        @JvmField val CREATOR = PaperParcelOpenWeatherCityEntity.CREATOR
+        @JvmField val CREATOR = PaperParcelCityEntity.CREATOR
     }
 
-    fun update(newCity: OpenWeatherCity): OpenWeatherCityEntity {
+    fun update(newCity: City): CityEntity {
         if (cityId != newCity.id) {
             Timber.e("City id changed (!) old: $cityId , new ${newCity.id}")
         } else {
             lastUsed = Date()
+            lastUpdated = lastUsed
             city = newCity
             name = newCity.name
             city.notifyChange()
@@ -42,17 +45,17 @@ import java.util.*
     }
 }
 
-@PaperParcel data class OpenWeatherFindResult(
-        @SerializedName("list") val cities: List<OpenWeatherCity>?,
+@PaperParcel data class SearchResult(
+        @SerializedName("list") val cities: List<City>?,
         val message: String?,
         val count: Int?
 ) : PaperParcelable {
     companion object {
-        @JvmField val CREATOR = PaperParcelOpenWeatherFindResult.CREATOR
+        @JvmField val CREATOR = PaperParcelSearchResult.CREATOR
     }
 }
 
-@PaperParcel data class OpenWeatherCity(
+@PaperParcel data class City(
         val id: Long,
         val name: String?,
         val main: Data?,
@@ -69,12 +72,12 @@ import java.util.*
 ) : PaperParcelable, SearchSuggestion, BaseObservable() {
 
     companion object {
-        @JvmField val CREATOR = PaperParcelOpenWeatherCity.CREATOR
+        @JvmField val CREATOR = PaperParcelCity.CREATOR
     }
 
     override fun getBody() = "$name, ${sys?.country}"
 
-    fun toEntity() = OpenWeatherCityEntity(this)
+    fun toEntity() = CityEntity(this)
 
     fun hasTemperature(): Boolean = main?.temp != null
 
@@ -121,7 +124,7 @@ import java.util.*
             val temp_max: Float?
     ) : PaperParcelable {
         companion object {
-            @JvmField val CREATOR = PaperParcelOpenWeatherCity_Data.CREATOR
+            @JvmField val CREATOR = PaperParcelCity_Data.CREATOR
         }
     }
 
@@ -130,7 +133,7 @@ import java.util.*
             val deg: Float?
     ) : PaperParcelable {
         companion object {
-            @JvmField val CREATOR = PaperParcelOpenWeatherCity_Wind.CREATOR
+            @JvmField val CREATOR = PaperParcelCity_Wind.CREATOR
         }
     }
 
@@ -143,7 +146,7 @@ import java.util.*
             val message: Float?
     ) : PaperParcelable {
         companion object {
-            @JvmField val CREATOR = PaperParcelOpenWeatherCity_Sys.CREATOR
+            @JvmField val CREATOR = PaperParcelCity_Sys.CREATOR
         }
     }
 
@@ -151,7 +154,7 @@ import java.util.*
             @SerializedName("3h") val treeHours: Float?
     ) : PaperParcelable {
         companion object {
-            @JvmField val CREATOR = PaperParcelOpenWeatherCity_Precipitation.CREATOR
+            @JvmField val CREATOR = PaperParcelCity_Precipitation.CREATOR
         }
     }
 
@@ -159,7 +162,7 @@ import java.util.*
             val all: Int?
     ) : PaperParcelable {
         companion object {
-            @JvmField val CREATOR = PaperParcelOpenWeatherCity_Clouds.CREATOR
+            @JvmField val CREATOR = PaperParcelCity_Clouds.CREATOR
         }
     }
 
@@ -171,7 +174,7 @@ import java.util.*
             val icon: String?
     ) : PaperParcelable {
         companion object {
-            @JvmField val CREATOR = PaperParcelOpenWeatherCity_Weather.CREATOR
+            @JvmField val CREATOR = PaperParcelCity_Weather.CREATOR
         }
     }
 

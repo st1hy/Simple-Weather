@@ -21,7 +21,7 @@ interface OpenWeatherMapService {
             @Query("type") type: Type = Type.LIKE,
             @Query("units") units: Units = Units.METRIC,
             @Query("lang") lang: String = Locale.getDefault().language
-    ): Single<OpenWeatherFindResult>
+    ): Single<SearchResult>
 
 
     @GET("weather")
@@ -30,7 +30,7 @@ interface OpenWeatherMapService {
             @Query("id") cityId: Long?,
             @Query("units") units: Units = Units.METRIC,
             @Query("lang") lang: String = Locale.getDefault().language
-    ): Single<OpenWeatherCity>
+    ): Single<City>
 
     companion object {
         const val API_KEY = "577648702833ddcd32cca67396304083"

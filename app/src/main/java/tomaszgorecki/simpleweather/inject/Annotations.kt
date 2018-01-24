@@ -7,6 +7,8 @@ import javax.inject.Scope
 
 @Scope annotation class PerActivity
 
+@Scope annotation class PerListItem
+
 @Qualifier annotation class AppContext
 
 @Qualifier annotation class ActivityContext

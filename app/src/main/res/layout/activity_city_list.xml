@@ -35,7 +35,8 @@
 
             </android.support.design.widget.AppBarLayout>
 
-            <include layout="@layout/city_list" />
+            <include layout="@layout/city_list"
+                app:viewModel="@{viewModel}"/>
         </LinearLayout>
 
         <com.arlib.floatingsearchview.FloatingSearchView
@@ -55,6 +56,7 @@
             app:floatingSearch_suggestionsListAnimDuration="250"
             onSearchListener="@{viewModel.searchListener}"
             suggestions="@{viewModel.suggestions}"
+            inputFilters="@{viewModel.inputFilters}"
             queryChanges="@{(observable) -> viewModel.queryChanges(observable)}"
             searchProgress="@{viewModel.searchProgress}" />
 

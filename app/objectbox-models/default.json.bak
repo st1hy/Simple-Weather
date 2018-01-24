@@ -5,8 +5,8 @@
   "entities": [
     {
       "id": "1:9083887423634301212",
-      "lastPropertyId": "4:782699239026277803",
-      "name": "OpenWeatherCityEntity",
+      "lastPropertyId": "5:6345075376092100881",
+      "name": "CityEntity",
       "properties": [
         {
           "id": "1:6164883463433351162",
@@ -23,6 +23,10 @@
         {
           "id": "4:782699239026277803",
           "name": "lastUsed"
+        },
+        {
+          "id": "5:6345075376092100881",
+          "name": "cityId"
         }
       ],
       "relations": []

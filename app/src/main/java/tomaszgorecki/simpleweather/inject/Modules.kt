@@ -13,8 +13,8 @@ import io.objectbox.BoxStore
 import kotlinx.android.synthetic.main.city_list.*
 import retrofit2.Retrofit
 import tomaszgorecki.simpleweather.WeatherApp
+import tomaszgorecki.simpleweather.model.CityEntity
 import tomaszgorecki.simpleweather.model.MyObjectBox
-import tomaszgorecki.simpleweather.model.OpenWeatherCityEntity
 import tomaszgorecki.simpleweather.model.OpenWeatherMapService
 import java.util.*
 import javax.inject.Singleton
@@ -37,12 +37,18 @@ abstract class AppModule {
 
 }
 
-@Module object CityListActivityModule {
+@Module abstract class CityListActivityModule {
 
-    @Provides @JvmStatic @PerActivity fun twoPanel(activity: Activity): PanelMode {
-        return if (activity.city_detail_container != null) PanelMode.TWO_PANE
-        else PanelMode.SINGLE
+    @Module companion object {
+        @Provides @JvmStatic @PerActivity fun twoPanel(activity: Activity): PanelMode {
+            return if (activity.city_detail_container != null) PanelMode.TWO_PANE
+            else PanelMode.SINGLE
+        }
     }
+
+    @Binds abstract fun listItemComponentBuilder(component: CityListActivityComponent)
+            : CityListItemComponentBuilder
+
 }
 
 enum class PanelMode {
@@ -73,6 +79,11 @@ enum class PanelMode {
     @Provides @JvmStatic @Singleton fun objectBox(@AppContext context: Context): BoxStore =
             MyObjectBox.builder().androidContext(context).build()
 
-    @Provides @JvmStatic fun cityBox(objectBox: BoxStore): Box<OpenWeatherCityEntity> =
-            objectBox.boxFor(OpenWeatherCityEntity::class.java)
+    @Provides @JvmStatic fun cityBox(objectBox: BoxStore): Box<CityEntity> =
+            objectBox.boxFor(CityEntity::class.java)
+}
+
+@Module class CityListItemModule(private val entity: CityEntity) {
+
+    @Provides fun cityEntity() = entity
 }
